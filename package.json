@@ -1,0 +1,17 @@
+{
+  "name": "xpub-derive",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "bip32": "^5.0.0-rc.0",
+    "bitcoinjs-lib": "^6.1.7",
+    "commander": "^13.1.0",
+    "tiny-secp256k1": "^2.2.3"
+  }
+}
