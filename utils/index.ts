@@ -57,3 +57,14 @@ export const deriveAddresses_p2wpkh = (
 		return deriveAddress_p2wpkh(xpub, addressRole, i)
 	})
 }
+
+export const getAddressDerivationPath_p2wpkh = (
+	addressRole: AddressRole,
+	addrIndex: number
+) => {
+	return `m/84'/0'/0'/${addressRole}/${addrIndex}`
+}
+
+export const getAddressMempoolUrl = (address: string) => {
+	return `https://mempool.space/address/${address}`
+}
