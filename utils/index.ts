@@ -45,7 +45,7 @@ export const deriveAddress_p2wpkh = (
 	const child = node.derive(addressRole).derive(addrIndex)
 	const pubkey = Buffer.from(child.publicKey)
 	const { address } = bitcoin.payments.p2wpkh({ pubkey, network })
-	return address
+	return address!
 }
 
 export const deriveAddresses_p2wpkh = (
