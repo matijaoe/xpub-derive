@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
-import { ADDRESS_ROLE } from './config/networks'
+import { ADDRESS_ROLES } from './config/networks'
 import {
 	deriveAddresses_p2wpkh,
 	getAddressDerivationPath_p2wpkh,
 	getAddressMempoolUrl,
 	parseAnyPub,
-	xpubToZpub,
-	zpubToXpub,
+	convertXpubToZpub,
+	convertZpubToXpub,
 } from './utils'
 import {
 	printAddresses,
@@ -49,26 +49,26 @@ program
 				? deriveAddresses_p2wpkh(
 						extendedPub,
 						addressCount,
-						ADDRESS_ROLE.external
+						ADDRESS_ROLES.external
 				  )
 				: undefined
 			let rawAddressesInternal: string[] | undefined = opts.internal
 				? deriveAddresses_p2wpkh(
 						extendedPub,
 						addressCount,
-						ADDRESS_ROLE.internal
+						ADDRESS_ROLES.internal
 				  )
 				: undefined
 
 			const addresses = {
 				external: rawAddressesExternal?.map((address, idx) => ({
 					address,
-					path: getAddressDerivationPath_p2wpkh(ADDRESS_ROLE.external, idx),
+					path: getAddressDerivationPath_p2wpkh(ADDRESS_ROLES.external, idx),
 					mempoolUrl: getAddressMempoolUrl(address),
 				})),
 				internal: rawAddressesInternal?.map((address, idx) => ({
 					address,
-					path: getAddressDerivationPath_p2wpkh(ADDRESS_ROLE.internal, idx),
+					path: getAddressDerivationPath_p2wpkh(ADDRESS_ROLES.internal, idx),
 					mempoolUrl: getAddressMempoolUrl(address),
 				})),
 			}
@@ -76,11 +76,11 @@ program
 			const { node } = parseAnyPub(extendedPub)
 
 			const xpub = extendedPub.startsWith('zpub')
-				? zpubToXpub(extendedPub)
+				? convertZpubToXpub(extendedPub)
 				: node.neutered().toBase58()
 			const zpub = extendedPub.startsWith('zpub')
 				? extendedPub
-				: xpubToZpub(xpub)
+				: convertXpubToZpub(xpub)
 
 			printDerivedAddresses({
 				addresses,

@@ -7,10 +7,10 @@ export type DerivedAddress = {
 	mempoolUrl?: string
 }
 
-const TABLE_PADDING = 1
-const TABLE_SIDE_PADDING = TABLE_PADDING * 2
-
 function createTable(options?: Table.TableConstructorOptions) {
+	const TABLE_PADDING = 1
+	const TABLE_SIDE_PADDING = TABLE_PADDING * 2
+
 	const colWidths = options?.colWidths?.map((width) =>
 		width ? width + TABLE_SIDE_PADDING : width
 	)

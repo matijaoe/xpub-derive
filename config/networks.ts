@@ -1,4 +1,4 @@
-import * as bitcoin from 'bitcoinjs-lib'
+import * as bitcoin from '@bitgo/utxo-lib'
 
 // Custom BIP84 network config for zpub
 export const bitcoinBip84 = {
@@ -9,9 +9,9 @@ export const bitcoinBip84 = {
 	},
 }
 
-export const ADDRESS_ROLE = {
+export const ADDRESS_ROLES = {
 	external: 0, // receive addresses
 	internal: 1, // change addresses
 } as const
 
-export type AddressRole = (typeof ADDRESS_ROLE)[keyof typeof ADDRESS_ROLE]
+export type AddressRole = (typeof ADDRESS_ROLES)[keyof typeof ADDRESS_ROLES]
