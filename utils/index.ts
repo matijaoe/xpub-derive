@@ -1,7 +1,6 @@
 import * as ecc from '@bitcoinerlab/secp256k1'
 import * as bitcoin from '@bitgo/utxo-lib'
 import { BIP32Factory } from 'bip32'
-import bs58check from 'bs58check'
 import { Buffer } from 'buffer'
 import type { AddressRole } from '../config/networks'
 import { convertZpubToXpub } from '../lib/xpub-converter'
@@ -29,11 +28,6 @@ export const parseAnyPub = (extendedPub: string) => {
 		throw new Error('Unsupported prefix. Provide an xpub or zpub.')
 	}
 	return bip32.fromBase58(convertedPub, bitcoin.networks.bitcoin)
-}
-
-function getExtendedKeyDepth(extendedKey: string): number {
-	const buffer = bs58check.decode(extendedKey)
-	return buffer.readUInt8(4) // Depth is stored in byte at index 4
 }
 
 /**

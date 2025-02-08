@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { Command } from 'commander'
 import { ADDRESS_ROLES } from './config/networks'
 import { convertXpubToZpub, convertZpubToXpub } from './lib/xpub-converter'
@@ -44,14 +43,14 @@ program
 		}
 
 		try {
-			let rawAddressesExternal: string[] | undefined = opts.external
+			let rawAddressesExternal = opts.external
 				? deriveAddresses_p2wpkh(
 						extendedPub,
 						addressCount,
 						ADDRESS_ROLES.external
 				  )
 				: undefined
-			let rawAddressesInternal: string[] | undefined = opts.internal
+			let rawAddressesInternal = opts.internal
 				? deriveAddresses_p2wpkh(
 						extendedPub,
 						addressCount,
@@ -111,20 +110,17 @@ function printDerivedAddresses({
 	addresses,
 	parentKeys,
 }: PrintDerivedAddressesProps) {
-	// Print parent keys if provided
 	if (parentKeys) {
 		printParentKeys(parentKeys)
 		console.log('')
 	}
 
-	// Print external addresses if provided
 	if (addresses?.external?.length) {
 		console.log('External addresses:')
 		printAddresses(addresses.external)
 		console.log('')
 	}
 
-	// Print internal addresses if provided
 	if (addresses?.internal?.length) {
 		console.log('Internal addresses:')
 		printAddresses(addresses.internal)
