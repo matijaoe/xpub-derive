@@ -11,6 +11,8 @@
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.2.0",
     "@bitgo/utxo-lib": "^11.2.1",
+    "@scure/base": "^1.2.4",
+    "@scure/bip32": "^1.6.2",
     "@types/bs58check": "^2.1.2",
     "bip32": "^5.0.0-rc.0",
     "cli-table3": "^0.6.5",

@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 import { Command } from 'commander'
 import { ADDRESS_ROLES } from './config/networks'
+import { convertXpubToZpub, convertZpubToXpub } from './lib/xpub-converter'
 import {
 	deriveAddresses_p2wpkh,
 	getAddressDerivationPath_p2wpkh,
 	getAddressMempoolUrl,
-	parseAnyPub,
-	convertXpubToZpub,
-	convertZpubToXpub,
 } from './utils'
 import {
 	printAddresses,
@@ -27,8 +25,9 @@ program
 	.option('-i, --internal', 'Derive internal addresses (chain=1)', false)
 	.option('-n, --count <number>', 'Number of addresses to derive', '5')
 	.option('-x, --show-xpub', 'Show parent xpub/zpub', false)
+	.option('-a, --account <number>', 'Account index (0+)', '0')
 	.action((extendedPub, opts) => {
-		let { count: addressCount } = opts
+		let { count: addressCount, account: accountIndex } = opts
 		addressCount = parseInt(addressCount, 10)
 		if (isNaN(addressCount) || addressCount < 1) {
 			console.error('Count must be a positive integer.')
@@ -61,23 +60,29 @@ program
 				: undefined
 
 			const addresses = {
-				external: rawAddressesExternal?.map((address, idx) => ({
+				external: rawAddressesExternal?.map((address, addrIndex) => ({
 					address,
-					path: getAddressDerivationPath_p2wpkh(ADDRESS_ROLES.external, idx),
+					path: getAddressDerivationPath_p2wpkh({
+						role: ADDRESS_ROLES.external,
+						index: addrIndex,
+						account: accountIndex,
+					}),
 					mempoolUrl: getAddressMempoolUrl(address),
 				})),
-				internal: rawAddressesInternal?.map((address, idx) => ({
+				internal: rawAddressesInternal?.map((address, addrIndex) => ({
 					address,
-					path: getAddressDerivationPath_p2wpkh(ADDRESS_ROLES.internal, idx),
+					path: getAddressDerivationPath_p2wpkh({
+						role: ADDRESS_ROLES.internal,
+						index: addrIndex,
+						account: accountIndex,
+					}),
 					mempoolUrl: getAddressMempoolUrl(address),
 				})),
 			}
 
-			const { node } = parseAnyPub(extendedPub)
-
 			const xpub = extendedPub.startsWith('zpub')
 				? convertZpubToXpub(extendedPub)
-				: node.neutered().toBase58()
+				: extendedPub
 			const zpub = extendedPub.startsWith('zpub')
 				? extendedPub
 				: convertXpubToZpub(xpub)

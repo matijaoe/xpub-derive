@@ -6,6 +6,8 @@
       "dependencies": {
         "@bitcoinerlab/secp256k1": "^1.2.0",
         "@bitgo/utxo-lib": "^11.2.1",
+        "@scure/base": "^1.2.4",
+        "@scure/bip32": "^1.6.2",
         "@types/bs58check": "^2.1.2",
         "bip32": "^5.0.0-rc.0",
         "cli-table3": "^0.6.5",
@@ -39,6 +41,8 @@
     "@noble/secp256k1": ["@noble/secp256k1@1.6.3", "", {}, "sha512-T04e4iTurVy7I8Sw4+c5OSN9/RkPlo1uKxAomtxQNLq8j1uPAqnsqG1bqvY3Jv7c13gyr6dui0zmh/I3+f/JaQ=="],
 
     "@scure/base": ["@scure/base@1.2.4", "", {}, "sha512-5Yy9czTO47mqz+/J8GM6GIId4umdCk1wc1q8rKERQulIoc8VP9pzDcghv10Tl2E7R96ZUx/PhND3ESYUQX8NuQ=="],
+
+    "@scure/bip32": ["@scure/bip32@1.6.2", "", { "dependencies": { "@noble/curves": "~1.8.1", "@noble/hashes": "~1.7.1", "@scure/base": "~1.2.2" } }, "sha512-t96EPDMbtGgtb7onKKqxRLfE5g05k7uHnHRM2xdE6BP/ZmxaLtPek4J4KfVn/90IQNrU1IOAqMgiDtUdtbe3nw=="],
 
     "@types/bs58check": ["@types/bs58check@2.1.2", "", { "dependencies": { "@types/node": "*" } }, "sha512-xpXaQlOIY1KoXlA/ytHGHpEIU87PJt+g9SH7nC6HdCgaBwT2IEZIwBMHbjuX6BpnfbiUMlmwqurdLDwXpcdmSA=="],
 
