@@ -105,3 +105,33 @@ export const getAddressDerivationPath_p2wpkh = ({
 export const getAddressMempoolUrl = (address: string): string => {
 	return `https://mempool.space/address/${address}`
 }
+
+/**
+ * Checks if a given address belongs to an xpub by deriving addresses
+ * until a match is found or the limit is reached.
+ *
+ * @param address - The Bitcoin address to check
+ * @param xpub - The extended public key (xpub or zpub)
+ * @param limit - Maximum number of addresses to check per chain (default: 10000)
+ * @param role - The derivation role (0 for receive, 1 for change)
+ * @returns boolean indicating if the address belongs to the xpub
+ */
+export const checkAddressBelongs = (
+	address: string,
+	extendedPub: string,
+	limit: number = 10_000,
+	role: AddressRole = 0
+): boolean => {
+	for (let i = 0; i < limit; i++) {
+		const derivedAddress = deriveAddress_p2wpkh(extendedPub, role, i)
+		if (derivedAddress === address) {
+			return true
+		}
+
+		if (i > 0 && i % 100 === 0) {
+			console.log(`Checked ${i} addresses...`)
+		}
+	}
+
+	return false
+}
