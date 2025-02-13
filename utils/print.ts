@@ -4,7 +4,7 @@ export type DerivedAddress = {
 	address: string
 	path: string
 	url?: string
-	mempoolUrl?: string
+	explorerUrl?: string
 }
 
 const createTable = (options?: Table.TableConstructorOptions) => {
@@ -60,7 +60,7 @@ export const createClickableUrl = (
 
 export const printAddresses = (
 	addresses: DerivedAddress[],
-	opts: { showMempoolUrl?: boolean } = {}
+	opts: { showExplorerUrl?: boolean } = {}
 ) => {
 	const length = addresses.length
 	const getIdxColWidth = (length: number) => {
@@ -82,25 +82,25 @@ export const printAddresses = (
 			'#',
 			'Address',
 			'Derivation Path',
-			opts.showMempoolUrl ? 'Mempool' : undefined,
+			opts.showExplorerUrl ? 'Explorer' : undefined,
 		].filter(Boolean) as string[],
 		colWidths: [
 			getIdxColWidth(length) + 2,
 			getMaxColumnWidth(addresses.map(({ address }) => address)),
 			getMaxColumnWidth(addresses.map(({ path }) => path)) + 1,
-			opts.showMempoolUrl ? 10 : null,
+			opts.showExplorerUrl ? 14 : null,
 		].filter(Boolean),
 		style: { head: ['bold'] },
 		colAligns: ['right'],
 	})
 
-	addresses.forEach(({ address, path, mempoolUrl }, index) => {
+	addresses.forEach(({ address, path, explorerUrl }, index) => {
 		const columns = [index, address, path]
-		if (opts.showMempoolUrl) {
-			const mempoolLink = mempoolUrl
-				? createClickableUrl(mempoolUrl, 'mempool')
+		if (opts.showExplorerUrl) {
+			const explorerLink = explorerUrl
+				? createClickableUrl(explorerUrl, 'mempool.space')
 				: ''
-			columns.push(mempoolLink)
+			columns.push(explorerLink)
 		}
 		table.push(columns)
 	})

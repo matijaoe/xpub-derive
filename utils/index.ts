@@ -102,8 +102,15 @@ export const getAddressDerivationPath_p2wpkh = ({
  * @param address - The Bitcoin address.
  * @returns A URL string.
  */
-export const getAddressMempoolUrl = (address: string): string => {
-	return `https://mempool.space/address/${address}`
+export const getAddressExplorerUrl = (
+	address: string,
+	service = 'mempool.space'
+): string => {
+	switch (service) {
+		case 'mempool.space':
+		default:
+			return `https://mempool.space/address/${address}`
+	}
 }
 
 /**
@@ -134,4 +141,12 @@ export const checkAddressBelongs = (
 	}
 
 	return false
+}
+
+export const isZpub = (extendedPub: string) => {
+	return extendedPub.startsWith('zpub')
+}
+
+export const isXpub = (extendedPub: string) => {
+	return extendedPub.startsWith('xpub')
 }
