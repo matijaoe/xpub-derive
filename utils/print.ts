@@ -7,7 +7,7 @@ export type DerivedAddress = {
 	mempoolUrl?: string
 }
 
-function createTable(options?: Table.TableConstructorOptions) {
+const createTable = (options?: Table.TableConstructorOptions) => {
 	const TABLE_PADDING = 1
 	const TABLE_SIDE_PADDING = TABLE_PADDING * 2
 
@@ -43,7 +43,25 @@ export const printParentKeys = ({
 	console.log(table.toString())
 }
 
-export const printAddresses = (addresses: DerivedAddress[]) => {
+/**
+ * Creates a clickable terminal URL with custom text.
+ * Uses ANSI escape sequences to make the text clickable in terminal.
+ *
+ * @param url - The URL to link to
+ * @param text - The text to display (defaults to 'link')
+ * @returns A string containing the ANSI escape sequences for a clickable link
+ */
+export const createClickableUrl = (
+	url: string,
+	text: string = 'link'
+): string => {
+	return `\u001B]8;;${url}\u0007${text}\u001B]8;;\u0007`
+}
+
+export const printAddresses = (
+	addresses: DerivedAddress[],
+	opts: { showMempoolUrl?: boolean } = {}
+) => {
 	const length = addresses.length
 	const getIdxColWidth = (length: number) => {
 		if (length <= 10) return 1
@@ -60,22 +78,31 @@ export const printAddresses = (addresses: DerivedAddress[]) => {
 	}
 
 	const table = createTable({
-		head: ['#', 'Address', 'Derivation Path', 'Mempool'],
+		head: [
+			'#',
+			'Address',
+			'Derivation Path',
+			opts.showMempoolUrl ? 'Mempool' : undefined,
+		].filter(Boolean) as string[],
 		colWidths: [
 			getIdxColWidth(length) + 2,
 			getMaxColumnWidth(addresses.map(({ address }) => address)),
 			getMaxColumnWidth(addresses.map(({ path }) => path)) + 1,
-			10,
-		],
+			opts.showMempoolUrl ? 10 : null,
+		].filter(Boolean),
 		style: { head: ['bold'] },
 		colAligns: ['right'],
 	})
 
 	addresses.forEach(({ address, path, mempoolUrl }, index) => {
-		const mempoolLink = mempoolUrl
-			? `\u001B]8;;${mempoolUrl}\u0007mempool\u001B]8;;\u0007`
-			: ''
-		table.push([index, address, path, mempoolLink])
+		const columns = [index, address, path]
+		if (opts.showMempoolUrl) {
+			const mempoolLink = mempoolUrl
+				? createClickableUrl(mempoolUrl, 'mempool')
+				: ''
+			columns.push(mempoolLink)
+		}
+		table.push(columns)
 	})
 
 	console.log(table.toString())

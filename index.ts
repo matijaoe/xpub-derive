@@ -16,14 +16,13 @@ const program = new Command()
 
 program
 	.name('derive_addrs')
-	.description(
-		'Derives addresses from an xpub or zpub, with optional receive/change flags.'
-	)
+	.description('Derives addresses from an extended public key.')
 	.argument('<extendedPub>', 'Extended public key (xpub or zpub)')
 	.option('-e, --external', 'Derive external addresses (chain=0)', false)
 	.option('-i, --internal', 'Derive internal addresses (chain=1)', false)
 	.option('-n, --count <number>', 'Number of addresses to derive', '5')
 	.option('-x, --show-xpub', 'Show parent xpub/zpub', false)
+	.option('-m, --mempool', 'Show mempool URLs', false)
 	.option('-a, --account <number>', 'Account index (0+)', '0')
 	.action((extendedPub, opts) => {
 		let { count: addressCount, account: accountIndex } = opts
@@ -59,25 +58,35 @@ program
 				: undefined
 
 			const addresses = {
-				external: rawAddressesExternal?.map((address, addrIndex) => ({
-					address,
-					path: getAddressDerivationPath_p2wpkh({
-						role: ADDRESS_ROLES.external,
-						index: addrIndex,
-						account: accountIndex,
-					}),
-					mempoolUrl: getAddressMempoolUrl(address),
-				})),
-				internal: rawAddressesInternal?.map((address, addrIndex) => ({
-					address,
-					path: getAddressDerivationPath_p2wpkh({
-						role: ADDRESS_ROLES.internal,
-						index: addrIndex,
-						account: accountIndex,
-					}),
-					mempoolUrl: getAddressMempoolUrl(address),
-				})),
-			}
+				external: rawAddressesExternal?.map((address, addrIndex) => {
+					const obj: DerivedAddress = {
+						address,
+						path: getAddressDerivationPath_p2wpkh({
+							role: ADDRESS_ROLES.external,
+							index: addrIndex,
+							account: accountIndex,
+						}),
+					}
+					if (opts.mempool) {
+						obj.mempoolUrl = getAddressMempoolUrl(address)
+					}
+					return obj
+				}),
+				internal: rawAddressesInternal?.map((address, addrIndex) => {
+					const obj: DerivedAddress = {
+						address,
+						path: getAddressDerivationPath_p2wpkh({
+							role: ADDRESS_ROLES.internal,
+							index: addrIndex,
+							account: accountIndex,
+						}),
+					}
+					if (opts.mempool) {
+						obj.mempoolUrl = getAddressMempoolUrl(address)
+					}
+					return obj
+				}),
+			} satisfies Partial<Record<'external' | 'internal', DerivedAddress[]>>
 
 			const xpub = extendedPub.startsWith('zpub')
 				? convertZpubToXpub(extendedPub)
@@ -86,10 +95,15 @@ program
 				? extendedPub
 				: convertXpubToZpub(xpub)
 
-			printDerivedAddresses({
-				addresses,
-				parentKeys: opts.showXpub ? { xpub, zpub } : undefined,
-			})
+			printDerivedAddresses(
+				{
+					addresses,
+					parentKeys: opts.showXpub ? { xpub, zpub } : undefined,
+				},
+				{
+					showMempoolUrl: opts.mempool,
+				}
+			)
 		} catch (err) {
 			console.error(`Error: ${(err as Error).message}`)
 			process.exit(1)
@@ -106,10 +120,10 @@ type PrintDerivedAddressesProps = {
 	parentKeys?: { xpub: string; zpub: string }
 }
 
-function printDerivedAddresses({
-	addresses,
-	parentKeys,
-}: PrintDerivedAddressesProps) {
+function printDerivedAddresses(
+	{ addresses, parentKeys }: PrintDerivedAddressesProps,
+	opts: { showMempoolUrl?: boolean } = {}
+) {
 	if (parentKeys) {
 		printParentKeys(parentKeys)
 		console.log('')
@@ -117,13 +131,13 @@ function printDerivedAddresses({
 
 	if (addresses?.external?.length) {
 		console.log('External addresses:')
-		printAddresses(addresses.external)
+		printAddresses(addresses.external, opts)
 		console.log('')
 	}
 
 	if (addresses?.internal?.length) {
 		console.log('Internal addresses:')
-		printAddresses(addresses.internal)
+		printAddresses(addresses.internal, opts)
 		console.log('')
 	}
 }
