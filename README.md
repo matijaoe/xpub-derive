@@ -1,5 +1,7 @@
 # xpub-derive
 
+Command-line tool for deriving bitcoin addresses from an extended public key.
+
 To install dependencies:
 
 ```bash
